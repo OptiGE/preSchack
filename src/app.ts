@@ -1,0 +1,13 @@
+import MyScene from './my-scene'
+window.addEventListener('DOMContentLoaded', () => {
+    // Create the game using the 'renderCanvas'.
+    let game = new MyScene('renderCanvas');
+
+    // Create the scene.
+    game.createScene();
+
+    // Start render loop.
+    game.doRender();
+  });
+
+  //https://medium.com/the-innovation/babylon-js-typescript-project-setup-for-the-impatient-d8c71b4a57ad
