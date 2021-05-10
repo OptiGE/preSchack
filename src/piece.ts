@@ -66,4 +66,8 @@ export default class Piece {
             this.mesh.position.y = height/2;
     }
 
+    deleteMesh() : void{
+        this.mesh.dispose();
+    }
+
 }

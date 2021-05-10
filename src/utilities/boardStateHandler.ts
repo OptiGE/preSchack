@@ -34,6 +34,17 @@ export default class BoardStateHandler{
     }
         
     fullUpdate(moveString){
+        this.board = {
+            "8": {"a": "br", "b": "bk", "c": "bb", "d": "bq", "e": "bK", "f": "bb", "g": "bk", "h": "br"},
+            "7": {"a": "bp", "b": "bp", "c": "bp", "d": "bp", "e": "bp", "f": "bp", "g": "bp", "h": "bp"},
+            "6": {"a": "",   "b": "",   "c": "",   "d": "",   "e": "",   "f": "",   "g": "",   "h": ""},
+            "5": {"a": "",   "b": "",   "c": "",   "d": "",   "e": "",   "f": "",   "g": "",   "h": ""},
+            "4": {"a": "",   "b": "",   "c": "",   "d": "",   "e": "",   "f": "",   "g": "",   "h": ""},
+            "3": {"a": "",   "b": "",   "c": "",   "d": "",   "e": "",   "f": "",   "g": "",   "h": ""},
+            "2": {"a": "wp", "b": "wp", "c": "wp", "d": "wp", "e": "wp", "f": "wp", "g": "wp", "h": "wp"},
+            "1": {"a": "wr", "b": "wk", "c": "wb", "d": "wq", "e": "wK", "f": "wb", "g": "wk", "h": "wr"},
+        };
+
         let moves = moveString.split(" ");
         moves.forEach(move => {
             this.stepUpdate(move);
