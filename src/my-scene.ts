@@ -35,8 +35,7 @@ export default class MyScene {
 
         this.createGround();
 
-        //let browserStream = new BrowserStream();
-        //browserStream.process();
+        // https://doc.babylonjs.com/divingDeeper/webXR/WebXRSelectedFeatures
 
         let canStream = new CanStream();
         canStream.goUpdate(board);
