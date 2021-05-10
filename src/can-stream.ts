@@ -1,12 +1,11 @@
 import ndjsonStream from "can-ndjson-stream";
 import Board from "./board";
-import { boardSize } from "./common";
 import BoardStateHandler from "./utilities/boardStateHandler";
 
 export default class CanStream{
 
     private personalToken = 'wTjP95DubOM4kMPv';
-    private gameId = "z74xEVGqYNJf";
+    private gameId = "H9D6cP4s";
 
     goUpdate(board : Board){
         fetch("https://lichess.org/api/board/game/stream/" + this.gameId, { headers: {'Authorization': 'Bearer ' + this.personalToken}})
@@ -22,6 +21,8 @@ export default class CanStream{
                 }
                 console.log( result.value );
                 board.updateBoard(result.value);
+                board.placePieces();
+
                 reader.read().then( read );
 
             } );

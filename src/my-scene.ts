@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import Board from './board'
-import { boardSize, getAbsCoord } from './common'
+import { boardSize, getAbsCoord } from './chess-types'
 import CanStream from './can-stream';
 
 export default class MyScene {
@@ -9,6 +9,7 @@ export default class MyScene {
     private _scene: BABYLON.Scene;
     private _camera: BABYLON.ArcRotateCamera;
     private _light: BABYLON.Light;
+    private _ground: BABYLON.Mesh;
 
     constructor(canvasElement : string) {
         // Create canvas and engine.
@@ -39,14 +40,19 @@ export default class MyScene {
 
         let canStream = new CanStream();
         canStream.goUpdate(board);
+
+        // here we add XR support
+        const xr = this._scene.createDefaultXRExperienceAsync({
+            floorMeshes: [this._ground],
+        });
     }
 
     createGround() : void {
-        var ground = BABYLON.Mesh.CreateGround("ground", boardSize, boardSize, 1, this._scene, false);
+        this._ground = BABYLON.Mesh.CreateGround("ground", boardSize, boardSize, 1, this._scene, false);
         var groundMaterial = new BABYLON.StandardMaterial("ground", this._scene);
         groundMaterial.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/d/d5/Chess_Board.svg", this._scene);
         groundMaterial.specularColor = BABYLON.Color3.Black();
-        ground.material = groundMaterial;
+        this._ground.material = groundMaterial;
     }
 
     doRender() : void {

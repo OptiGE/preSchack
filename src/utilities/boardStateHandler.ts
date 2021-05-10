@@ -1,5 +1,7 @@
+import { BoardState } from "../chess-types";
+
 export default class BoardStateHandler{
-    private board = {
+    private board : BoardState = {
         "8": {"a": "br", "b": "bk", "c": "bb", "d": "bq", "e": "bK", "f": "bb", "g": "bk", "h": "br"},
         "7": {"a": "bp", "b": "bp", "c": "bp", "d": "bp", "e": "bp", "f": "bp", "g": "bp", "h": "bp"},
         "6": {"a": "",   "b": "",   "c": "",   "d": "",   "e": "",   "f": "",   "g": "",   "h": ""},
@@ -38,7 +40,7 @@ export default class BoardStateHandler{
         });
     }
 
-    getBoard(){
+    getBoard() : BoardState{
         return this.board;
     }
 

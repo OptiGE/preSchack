@@ -11,7 +11,7 @@
       "babylonjs-materials"
     ],
     "moduleResolution": "node",
-    "lib": ["es2018", "dom", "es6"]        
+    "lib": ["es2018", "dom", "es6", "dom.iterable"]        
   },
   "include": [
     "src/**/*"
