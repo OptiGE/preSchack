@@ -35,9 +35,6 @@ export default class MyScene {
 
         this.createGround();
 
-        //let browserStream = new BrowserStream();
-        //browserStream.process();
-
         let canStream = new CanStream();
         canStream.goUpdate(board);
 
