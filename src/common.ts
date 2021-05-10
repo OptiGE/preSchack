@@ -1,4 +1,6 @@
+import { AssetContainer } from 'babylonjs/assetContainer';
 import { TileLetter, TileNumber, HumanPosition, TilePosition, AbsPosition } from './chess-types'
+import Piece from './piece';
 
 export const boardSize = 400;
 
@@ -16,22 +18,4 @@ export function getAbsCoord(tilepos : TilePosition) : AbsPosition {
 
 export function getNumFromLetter(l : TileLetter){
     return l.toLowerCase().charCodeAt(0) - 97 + 1
-}
-
-export const lineup = ["tower", "horse", "bishop", "queen", "king", "bishop", "horse", "tower"]
-export const numlineup = [1, 2, 3, 4, 5, 3, 2, 1]
-export enum PrintMedia {
-    Pawn = 1,
-    Tower,
-    Horse,
-    Bishop,
-    Queen,
-    King
-  }
-
-
-export const pieceTypes = {
-    "pawn": {
-        "mesh": "green"
-    }
 }

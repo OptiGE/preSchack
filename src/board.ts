@@ -3,14 +3,17 @@ import * as BABYLON from 'babylonjs';
 import { TileLetter, TileNumber, HumanPosition, TilePosition, AbsPosition } from './chess-types'
 import { boardSize, getAbsCoord } from './common'
 import Piece from './piece'
+import BoardStateHandler from './utilities/boardStateHandler';
 
 export default class Board {
     private scene: BABYLON.Scene;
     private p1_pieces: any;
     private p2_pieces: any;
+    private boardStateHandler: BoardStateHandler;
 
     constructor(scene : BABYLON.Scene) {
         this.scene = scene;
+        this.boardStateHandler = new BoardStateHandler();
 
         this.p1_pieces = {
             pawns: {},
@@ -42,6 +45,19 @@ export default class Board {
 
         team.nonpawns[6] = new Piece("king", {a: 3, b: side}, color, this.scene)
         team.nonpawns[7] = new Piece("queen", {a: 4, b: side}, color, this.scene)
+    }
+
+    updateBoard(update){
+        if(update.type == "gameFull"){
+            this.boardStateHandler.fullUpdate(update.state.moves)
+            console.log(this.boardStateHandler.getBoard())
+        }else if (update.type == "gameState"){
+            // In the future, this should only run stepUpdate for the latest move
+            this.boardStateHandler.fullUpdate(update.moves)
+            console.log(this.boardStateHandler.getBoard())
+        }else{
+            console.log("Confused by type")
+        }
     }
 
 }
