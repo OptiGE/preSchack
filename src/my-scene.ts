@@ -10,6 +10,7 @@ export default class MyScene {
     private _camera: BABYLON.ArcRotateCamera;
     private _light: BABYLON.Light;
     private _ground: BABYLON.Mesh;
+    private xrCamera: BABYLON.WebXRCamera;
 
     constructor(canvasElement : string) {
         // Create canvas and engine.
@@ -25,7 +26,7 @@ export default class MyScene {
     async createScene() : Promise<void> {
         // Setup
         this._scene = new BABYLON.Scene(this._engine);
-        this._camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 480, new BABYLON.Vector3(0, 0, 0), this._scene);
+        this._camera = new BABYLON.ArcRotateCamera("Camera", Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene);
         this._camera.setTarget(BABYLON.Vector3.Zero());
         this._camera.attachControl(this._canvas, false);
         this._light = new BABYLON.HemisphericLight('skyLight', new BABYLON.Vector3(0,1,0), this._scene);
@@ -40,10 +41,26 @@ export default class MyScene {
         const xr = await this._scene.createDefaultXRExperienceAsync({
             floorMeshes: [this._ground],
         });
-        
+        const xrHelper = await BABYLON.WebXRExperienceHelper.CreateAsync(this._scene);
+        //const sessionManager = await xrHelper.enterXRAsync("immersive-vr", "local-floor" /*, optional render target*/);
         const xrSessionManager = new BABYLON.WebXRSessionManager(this._scene);
-        const xrCamera = new BABYLON.WebXRCamera("VRcamera", this._scene, xrSessionManager);
-        xrCamera.setTransformationFromNonVRCamera(this._camera, true);
+
+        xrHelper.camera = new BABYLON.WebXRCamera("VRcamera", this._scene, xrSessionManager);
+        xrHelper.camera.setTransformationFromNonVRCamera(this._camera, true);
+        xrHelper.camera.position.y = 400 // Does nothing
+        
+
+        xrHelper.onInitialXRPoseSetObservable.add((xrCamera) => {
+            // floor is at y === 2
+            xrCamera.position.y = 40;
+            xrCamera.position.x = 400;
+        });
+
+        const featuresManager = xr.baseExperience.featuresManager; // or any other way to get a features manager
+        featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, "stable" /* or latest */, {
+            xrInput: xr.input,
+            floorMeshes: [this._ground],
+        });
         
     }
 

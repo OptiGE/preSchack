@@ -36,20 +36,20 @@ export default class Piece {
                 this.mesh = BABYLON.MeshBuilder.CreateBox("gray", {"height": height, "width": boardSize/14, "depth": boardSize/14}, this.scene);
             break;
             case "b":
-                height = 45;
+                height = boardSize/10;
                 this.mesh = BABYLON.MeshBuilder.CreatePolyhedron("gray", {"type": 1, "size": boardSize/25}, this.scene);
             break;
             case "k":
-                height = 10;
-                this.mesh = BABYLON.MeshBuilder.CreateTorus("gray", {"diameter": 25, "thickness": 10} , this.scene);
+                height = boardSize/30;
+                this.mesh = BABYLON.MeshBuilder.CreateTorus("gray", {"diameter": boardSize/15, "thickness": boardSize/30} , this.scene);
             break;
             case "K":
                 height = boardSize/6;
-                this.mesh = BABYLON.MeshBuilder.CreateCylinder("gray", {"height": height, "diameterBottom": 30, "diameterTop": 30}, this.scene);
+                this.mesh = BABYLON.MeshBuilder.CreateBox("gray", {"height": height, "width": boardSize/20, "depth": boardSize/20}, this.scene);
             break;
             case "q":
                 height = boardSize/5;
-                this.mesh = BABYLON.MeshBuilder.CreateCylinder("gray", {"height": height, "diameterBottom": 30, "diameterTop": 4}, this.scene);
+                this.mesh = BABYLON.MeshBuilder.CreateCylinder("gray", {"height": height, "diameterBottom": boardSize/10, "diameterTop": boardSize/35}, this.scene);
             break;
             default:
                 height = boardSize/20;
