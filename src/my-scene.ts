@@ -22,28 +22,29 @@ export default class MyScene {
         });
     }
 
-    createScene() : void {
+    async createScene() : Promise<void> {
+        // Setup
         this._scene = new BABYLON.Scene(this._engine);
-    
         this._camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 480, new BABYLON.Vector3(0, 0, 0), this._scene);
         this._camera.setTarget(BABYLON.Vector3.Zero());
         this._camera.attachControl(this._canvas, false);
-
         this._light = new BABYLON.HemisphericLight('skyLight', new BABYLON.Vector3(0,1,0), this._scene);
-    
         let board = new Board(this._scene)
-
         this.createGround();
 
-        // https://doc.babylonjs.com/divingDeeper/webXR/WebXRSelectedFeatures
-
+        // Start stream
         let canStream = new CanStream();
         canStream.goUpdate(board);
 
-        // here we add XR support
-        const xr = this._scene.createDefaultXRExperienceAsync({
+        // Set up VR
+        const xr = await this._scene.createDefaultXRExperienceAsync({
             floorMeshes: [this._ground],
         });
+        
+        const xrSessionManager = new BABYLON.WebXRSessionManager(this._scene);
+        const xrCamera = new BABYLON.WebXRCamera("VRcamera", this._scene, xrSessionManager);
+        xrCamera.setTransformationFromNonVRCamera(this._camera, true);
+        
     }
 
     createGround() : void {
