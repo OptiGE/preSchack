@@ -58,7 +58,7 @@ export default class MyScene {
                             let motionController = xrInput.motionController
                             if (motionController) {
                                 alert(`Meshposition: ${pointerInfo.pickInfo.pickedMesh.position}`)
-                                //hej
+                                console.log(`Position on board: `, getHumanCoord(pointerInfo.pickInfo.pickedMesh.position))
                             }
                         } else {
                             // Här går non-XR support
