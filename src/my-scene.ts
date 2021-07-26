@@ -47,13 +47,13 @@ export default class MyScene {
 
         xrHelper.camera = new BABYLON.WebXRCamera("VRcamera", this._scene, xrSessionManager);
         xrHelper.camera.setTransformationFromNonVRCamera(this._camera, true);
-        xrHelper.camera.position.y = 400 // Does nothing
+        xrHelper.camera.position.y = 10000 // Does nothing
         
 
         xrHelper.onInitialXRPoseSetObservable.add((xrCamera) => {
             // floor is at y === 2
-            xrCamera.position.y = 40;
-            xrCamera.position.x = 400;
+            xrCamera.position.y = 10000;
+            xrCamera.position.x = 10000;
         });
 
         const featuresManager = xr.baseExperience.featuresManager; // or any other way to get a features manager
