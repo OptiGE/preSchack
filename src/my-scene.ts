@@ -49,6 +49,8 @@ export default class MyScene {
             console.log('POINTER DOWN', pointerInfo)
 
             switch (pointerInfo.type) {
+
+                
                 case BABYLON.PointerEventTypes.POINTERDOWN:
                     if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
                         // "Grab" it by attaching the picked mesh to the VR Controller
@@ -57,14 +59,19 @@ export default class MyScene {
                             let xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
                             let motionController = xrInput.motionController
                             if (motionController) {
-                                alert(`Meshposition: ${pointerInfo.pickInfo.pickedMesh.position}`)
                                 console.log(`Position on board: `, getHumanCoord(pointerInfo.pickInfo.pickedMesh.position))
+                                let humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position);
+                                let selectedPiece = board.getPiece(humanCoord)
+                                selectedPiece.toggleSelect();
+                                //Spara någon stans att den är selectad
                             }
                         } else {
                             // Här går non-XR support
                         }
                     }
                     break;
+
+
                 case BABYLON.PointerEventTypes.POINTERUP:
                     //someone released a button
                     break;
