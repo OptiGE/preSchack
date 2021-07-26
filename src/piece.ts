@@ -6,6 +6,8 @@ export default class Piece {
     private scene: BABYLON.Scene;
     private position: HumanPosition;
     private mesh: BABYLON.Mesh;
+    private selected: boolean;
+    private material: BABYLON.StandardMaterial;
 
 
     constructor(pieceType: string, position : HumanPosition, color : string, scene : BABYLON.Scene) {
@@ -57,17 +59,32 @@ export default class Piece {
             break;
         }
 
-            var blueMat = new BABYLON.StandardMaterial("ground", this.scene);
-            blueMat.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-            blueMat.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-            if(color == "w")       blueMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-            else if (color == "b") blueMat.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.02);
-            this.mesh.material = blueMat;
+            this.material = new BABYLON.StandardMaterial("ground", this.scene);
+            this.material.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            this.material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            if(color == "w")       this.material.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            else if (color == "b") this.material.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.02);
+            this.mesh.material = this.material;
             this.mesh.position.y = height/2;
     }
 
     deleteMesh() : void{
         this.mesh.dispose();
+    }
+
+    toggleSelect(){
+        let selectedMaterial = new BABYLON.StandardMaterial("ground", this.scene);
+        selectedMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+        selectedMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+        selectedMaterial.emissiveColor = new BABYLON.Color3(1, 0.3, 0.3);
+
+        if (this.selected){
+            this.mesh.material = this.material
+            this.selected = false;
+        }else{
+            this.mesh.material = selectedMaterial;
+            this.selected = true;
+        }
     }
 
 }
