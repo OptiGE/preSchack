@@ -37,29 +37,48 @@ export default class MyScene {
       const canStream = new CanStream()
       canStream.goUpdate(board)
 
-      // Set up VR
-      const xr = await this._scene.createDefaultXRExperienceAsync({
-        floorMeshes: [this._ground]
-      })
-      const xrHelper = await BABYLON.WebXRExperienceHelper.CreateAsync(this._scene)
-      // const sessionManager = await xrHelper.enterXRAsync("immersive-vr", "local-floor" /*, optional render target*/);
-      const xrSessionManager = new BABYLON.WebXRSessionManager(this._scene)
+        // Set up VR
+        //Variabeln här som heter xr heter xrHelper i dokumentationen, men den som heter xrHelper här heter också xrHelper i andra delar av dokumentationen
+        //De är båda helpers och används till olika saker, men en är legacy och en inte, men jag vet inte vilken T_T
+        const xrHelper = await this._scene.createDefaultXRExperienceAsync({
+            floorMeshes: [this._ground],
+        });
 
-      xrHelper.camera = new BABYLON.WebXRCamera('VRcamera', this._scene, xrSessionManager)
-      xrHelper.camera.setTransformationFromNonVRCamera(this._camera, true)
-      xrHelper.camera.position.y = 400 // Does nothing
+        //Set up clicking on things
+        this._scene.onPointerObservable.add((pointerInfo) => {
+            console.log('POINTER DOWN', pointerInfo)
 
-      xrHelper.onInitialXRPoseSetObservable.add((xrCamera) => {
-        // floor is at y === 2
-        xrCamera.position.y = 40
-        xrCamera.position.x = 400
-      })
+            switch (pointerInfo.type) {
+                case BABYLON.PointerEventTypes.POINTERDOWN:
+                    if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
+                        // "Grab" it by attaching the picked mesh to the VR Controller
+                        if (xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+                            let pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
+                            let xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
+                            let motionController = xrInput.motionController
+                            if (motionController) {
+                                alert(`Meshposition: ${pointerInfo.pickInfo.pickedMesh.position}`)
+                                //hej
+                            }
+                        } else {
+                            // Här går non-XR support
+                        }
+                    }
+                    break;
+                case BABYLON.PointerEventTypes.POINTERUP:
+                    //someone released a button
+                    break;
+                }
 
-      const featuresManager = xr.baseExperience.featuresManager // or any other way to get a features manager
-      featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable' /* or latest */, {
-        xrInput: xr.input,
-        floorMeshes: [this._ground]
-      })
+        // Vad gör den här pointerdown råttan här? FattarNT
+        }, BABYLON.PointerEventTypes.POINTERDOWN);
+
+        const featuresManager = xrHelper.baseExperience.featuresManager; // or any other way to get a features manager
+        featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, "stable" /* or latest */, {
+            xrInput: xrHelper.input,
+            floorMeshes: [this._ground],
+        });
+        
     }
 
     createGround (): void {
