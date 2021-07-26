@@ -7,7 +7,6 @@ export default class BoardStateHandler {
 
     public fullUpdate (movesString : string) : void {
         this.resetState();
-        console.log('init', this.board);
 
         const moves = movesString
             .split(' ')
@@ -15,14 +14,11 @@ export default class BoardStateHandler {
 
         moves.forEach((move : Move) => {
             this.executeMove(move);
-            console.log('post', this.board.get(move.To));
         });
     }
 
     public getBoard () : [Coordinate, PieceValue][] {
         const result : [Coordinate, PieceValue][] = [];
-
-        console.log('getBoard', this.board);
 
         this.board.forEach((pieceValue, coordinate) => {
             if (pieceValue != null) {
@@ -46,7 +42,6 @@ export default class BoardStateHandler {
     }
 
     private isPromotion (move : Move) : boolean {
-        console.log('isPromotion', move.PromotedTo);
         return move.PromotedTo != null;
     }
 
@@ -79,7 +74,6 @@ export default class BoardStateHandler {
         const oldPiece = move.From;
         const newPiece = `${oldPiece.charAt(0)}${move.PromotedTo}` as PieceValue;
 
-        console.log('prommotedPiece', newPiece);
         return newPiece;
     }
 

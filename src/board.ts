@@ -20,10 +20,9 @@ export default class Board {
         this.clearPieces();
         const board = this.boardStateHandler.getBoard();
 
-        for (const [coordinate, pieceValue] of board) {
-            console.log('piece', coordinate, pieceValue);
-            this.pieces.set(coordinate, new Piece(coordinate, pieceValue, this.scene));
-        }
+      for (const [coordinate, pieceValue] of board) {
+        this.pieces.set(coordinate, new Piece(coordinate, pieceValue, this.scene))
+      }
     }
 
     public getPiece (coordinate : Coordinate) : Piece {
