@@ -1,7 +1,8 @@
 import * as BABYLON from 'babylonjs'
 
 import { Coordinate, PieceValue } from './gamestate/gamestateTypes'
-import { AbsPosition, boardSize } from './chess-types'
+import { getAbsCoord } from './coordinateConverter'
+import { boardSize } from './const'
 
 export default class Piece {
     private scene: BABYLON.Scene;
@@ -23,7 +24,7 @@ export default class Piece {
     }
 
     private movePiece (): void {
-      const absPos = this.getAbsCoord(this.position)
+      const absPos = getAbsCoord(this.position)
 
       this.mesh.position.x = absPos.x
       this.mesh.position.z = absPos.z
@@ -62,46 +63,29 @@ export default class Piece {
           break
       }
 
-      this.material = new BABYLON.StandardMaterial("ground", this.scene);
-      this.material.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-      this.material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-      if(color == "w")       this.material.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-      else if (color == "b") this.material.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.02);
-      this.mesh.material = this.material;
-      this.mesh.position.y = height/2;
-      
+      this.material = new BABYLON.StandardMaterial('ground', this.scene)
+      this.material.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4)
+      this.material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4)
+      if (this.pieceValue.charAt(0) === 'w') this.material.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5)
+      else if (this.pieceValue.charAt(0) === 'b') this.material.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.02)
+      this.mesh.material = this.material
+      this.mesh.position.y = height / 2
+
       this.movePiece()
     }
 
-    private getAbsCoord (coordinate: Coordinate): AbsPosition {
-      const cornerxz = (boardSize / 2) - (boardSize / 16)
-      const tileSize = boardSize / 8
+    toggleSelect () {
+      const selectedMaterial = new BABYLON.StandardMaterial('ground', this.scene)
+      selectedMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4)
+      selectedMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4)
+      selectedMaterial.emissiveColor = new BABYLON.Color3(1, 0.3, 0.3)
 
-      const abspos: AbsPosition = {
-        x: cornerxz - tileSize * (this.getNumFromLetter(coordinate.charAt(0)) - 1),
-        z: cornerxz - tileSize * (parseInt(coordinate.charAt(1)) - 1)
+      if (this.selected) {
+        this.mesh.material = this.material
+        this.selected = false
+      } else {
+        this.mesh.material = selectedMaterial
+        this.selected = true
       }
-
-      return abspos
     }
-
-    private getNumFromLetter (l: string) : number {
-      return l.toLowerCase().charCodeAt(0) - 97 + 1
-    }
-
-    toggleSelect(){
-        let selectedMaterial = new BABYLON.StandardMaterial("ground", this.scene);
-        selectedMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-        selectedMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-        selectedMaterial.emissiveColor = new BABYLON.Color3(1, 0.3, 0.3);
-
-        if (this.selected){
-            this.mesh.material = this.material
-            this.selected = false;
-        }else{
-            this.mesh.material = selectedMaterial;
-            this.selected = true;
-        }
-    }
-
 }

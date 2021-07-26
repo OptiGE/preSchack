@@ -26,6 +26,10 @@ export default class Board {
       }
     }
 
+    public getPiece (coordinate : Coordinate) {
+      return this.pieces.get(coordinate)
+    }
+
     clearPieces () {
       this.pieces.forEach(piece => {
         piece.deleteMesh()
