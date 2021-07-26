@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import Board from './board'
-import { boardSize, getAbsCoord } from './chess-types'
+import { boardSize, getAbsCoord, getHumanCoord } from './chess-types'
 import CanStream from './can-stream';
 
 export default class MyScene {
@@ -58,7 +58,7 @@ export default class MyScene {
                             let motionController = xrInput.motionController
                             if (motionController) {
                                 alert(`Meshposition: ${pointerInfo.pickInfo.pickedMesh.position}`)
-                                //hej
+                                console.log(`Position on board: `, getHumanCoord(pointerInfo.pickInfo.pickedMesh.position))
                             }
                         } else {
                             // Här går non-XR support
