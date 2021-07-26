@@ -1,6 +1,6 @@
 import { Coordinate, PromotionPiece } from './gamestateTypes'
 
-export class Move {
+export default class Move {
     public From : Coordinate;
     public To : Coordinate;
     public PromotedTo: PromotionPiece;

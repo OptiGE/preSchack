@@ -1,4 +1,4 @@
-import { Move } from './move'
+import Move from './move'
 import { Coordinate, PieceValue } from './gamestateTypes'
 
 export default class BoardStateHandler {
