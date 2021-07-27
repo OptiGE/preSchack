@@ -3,6 +3,7 @@ import Board from './board'
 import { getHumanCoord } from './coordinateConverter'
 import { boardSize } from './const'
 import CanStream from './canStream'
+import Piece from './piece'
 
 export default class MyScene {
     private _canvas: HTMLCanvasElement;
@@ -12,6 +13,8 @@ export default class MyScene {
     private _light: BABYLON.Light;
     private _ground: BABYLON.Mesh;
     private xrCamera: BABYLON.WebXRCamera;
+
+    private currentlySelectedPiece: Piece;
 
     constructor (canvasElement: string) {
       // Create canvas and engine.
@@ -30,7 +33,11 @@ export default class MyScene {
       this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene)
       this._camera.setTarget(BABYLON.Vector3.Zero())
       this._camera.attachControl(this._canvas, false)
-      this._light = new BABYLON.HemisphericLight('skyLight', new BABYLON.Vector3(0, 1, 0), this._scene)
+      this._light = new BABYLON.PointLight("PointLight", new BABYLON.Vector3(0, 3, 0), this._scene);
+
+      //this._scene.debugLayer.show();
+
+
       const board = new Board(this._scene)
       this.createGround()
 
@@ -46,23 +53,28 @@ export default class MyScene {
       })
 
       // Set up clicking on things
+      //Om man kan se en pointer av valfritt slag (mus eller kontroll tex)
+      
       this._scene.onPointerObservable.add((pointerInfo) => {
-        console.log('POINTER DOWN', pointerInfo)
-
         switch (pointerInfo.type) {
           case BABYLON.PointerEventTypes.POINTERDOWN:
+            console.log('CLICKED AT X: ' + pointerInfo.event.x); 
             if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
-              // "Grab" it by attaching the picked mesh to the VR Controller
+              console.log("Clicked a MESH")
               if (xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
                 const pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
                 const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
                 const motionController = xrInput.motionController
+                
                 if (motionController) {
-                  console.log('Position on board: ', getHumanCoord(pointerInfo.pickInfo.pickedMesh.position))
                   const humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
-                  const selectedPiece = board.getPiece(humanCoord)
-                  selectedPiece.toggleSelect()
-                  // Spara någon stans att den är selectad
+                  console.log(humanCoord)
+                  this.currentlySelectedPiece = board.getPiece(humanCoord)
+                  console.log("Setting currentPiece", this.currentlySelectedPiece)
+                  console.log("", humanCoord, board.getPiece(humanCoord));
+
+                  pointerInfo.pickInfo.pickedMesh.setParent(motionController.rootMesh)
+                  //this.currentlySelectedPiece.toggleSelect()
                 }
               } else {
                 // Här går non-XR support
@@ -71,15 +83,17 @@ export default class MyScene {
             break
 
           case BABYLON.PointerEventTypes.POINTERUP:
-            // someone released a button
+            //this.currentlySelectedPiece.toggleSelect();
+            console.log("REMOVING PARENT")
+            const humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+            console.log("Piece let go closest to ", humanCoord)
+            this.currentlySelectedPiece.removeParents();
             break
         }
-
-        // Vad gör den här pointerdown råttan här? FattarNT
-      }, BABYLON.PointerEventTypes.POINTERDOWN)
+      })// Lägg BABYLON.Whatever.PointerDOWN här för att begränsa callbacken till att bara köras då
 
       const featuresManager = xrHelper.baseExperience.featuresManager // or any other way to get a features manager
-      featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable' /* or latest */, {
+      featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable', {
         xrInput: xrHelper.input,
         floorMeshes: [this._ground]
       })

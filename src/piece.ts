@@ -76,9 +76,9 @@ export default class Piece {
 
     toggleSelect () {
       const selectedMaterial = new BABYLON.StandardMaterial('ground', this.scene)
-      selectedMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4)
-      selectedMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4)
-      selectedMaterial.emissiveColor = new BABYLON.Color3(1, 0.3, 0.3)
+      selectedMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2)
+      selectedMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2)
+      selectedMaterial.emissiveColor = new BABYLON.Color3(1, 0.1, 0.1)
 
       if (this.selected) {
         this.mesh.material = this.material
@@ -87,5 +87,9 @@ export default class Piece {
         this.mesh.material = selectedMaterial
         this.selected = true
       }
+    }
+
+    removeParents() {
+        this.mesh.setParent(null);
     }
 }
