@@ -14,4 +14,8 @@ export default class Move {
             this.PromotedTo = null;
         }
     }
+
+    public getMoveString () : string {
+        return `${this.From}${this.To}`;
+    }
 }
