@@ -1,4 +1,6 @@
-export default interface AbsPosition {
+interface AbsPosition {
     x: number;
     z: number;
 }
+
+export default AbsPosition;
