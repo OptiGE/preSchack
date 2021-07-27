@@ -17,15 +17,12 @@ export function getAbsCoord (coordinate: Coordinate): AbsPosition {
 
 export function getHumanCoord (abspos : AbsPosition) : Coordinate {
 
-  const roundToNearestTile = (n : number) => tileSize*Math.round(n/tileSize) - (tileSize/2)
+  //const roundToNearestTile = (n : number) => tileSize*Math.round(n/tileSize)
 
-  const x1 = roundToNearestTile(abspos.x)
-  const z2 = roundToNearestTile(abspos.z)
+  let n1 = (cornerxz - abspos.x) / tileSize // Avstånd från hörnet till faktisk position delat på rutbredd = antal rutor
+  let n2 = ((cornerxz - abspos.z) / tileSize) + 1 // +1 pga nollindexerat
 
-  let n1 = (cornerxz - x1) / tileSize // Avstånd från hörnet till faktisk position delat på rutbredd = antal rutor
-  let n2 = ((cornerxz - z2) / tileSize) + 1 // +1 pga nollindexerat
-
-  console.log("D E B U G", abspos, x1, z2, n1, n2, getLetterFromNum(n1))
+  console.log("D E B U G", abspos, n1, n2, getLetterFromNum(n1), tileSize)
 
   return `${getLetterFromNum(n1)}${n2}` as Coordinate
 }

@@ -8,7 +8,7 @@ export default class Piece {
     private scene: BABYLON.Scene;
     private position: Coordinate;
     private pieceValue: PieceValue;
-    private mesh: BABYLON.Mesh;
+    public mesh: BABYLON.Mesh;
     private selected: boolean;
     private material: BABYLON.StandardMaterial;
 
