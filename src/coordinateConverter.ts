@@ -20,6 +20,9 @@ export function getHumanCoord(abspos: AbsPosition): Coordinate {
   let n1 = (cornerxz - abspos.x) / tileSize // Avstånd från hörnet till faktisk position delat på rutbredd = antal rutor
   let n2 = ((cornerxz - abspos.z) / tileSize) + 1 // +1 pga nollindexerat
 
+  n1 = Math.round(n1)
+  n2 = Math.round(n2)
+
   return `${getLetterFromNum(n1)}${n2}` as Coordinate
 }
 
