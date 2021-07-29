@@ -30,17 +30,16 @@ export default class MyScene {
   }
 
   async createScene(): Promise<void> {
-    // Setup
-    this._scene = new BABYLON.Scene(this._engine)
+    // Set up BABYLON
+    this._scene = new BABYLON.Scene(this._engine) //this._scene.debugLayer.show();
     this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene)
     this._camera.setTarget(BABYLON.Vector3.Zero())
     this._camera.attachControl(this._canvas, false)
     this._light = new BABYLON.PointLight("PointLight", new BABYLON.Vector3(0, 3, 0), this._scene);
 
-    //this._scene.debugLayer.show();
-
-
+    // Set up
     const board = new Board(this._scene)
+    const api = new Api()
     this.createGround()
 
     // Start stream
@@ -48,53 +47,53 @@ export default class MyScene {
     stream.goUpdate(board)
 
     // Set up VR
-    // Variabeln här som heter xr heter xrHelper i dokumentationen, men den som heter xrHelper här heter också xrHelper i andra delar av dokumentationen
-    // De är båda helpers och används till olika saker, men en är legacy och en inte, men jag vet inte vilken T_T
     const xrHelper = await this._scene.createDefaultXRExperienceAsync({
       floorMeshes: [this._ground]
     })
 
-
-    //Om man kan se en pointer av valfritt slag (mus eller kontroll tex)
+    //Pointerhantering (mus eller kontroll tex)
     this._scene.onPointerObservable.add((pointerInfo) => {
 
       // Om pointern träffade en mesh och man är inuti VR
-      if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
-        if (xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+      if (!(pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh)) return;
+      if (!(xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR)) return;
 
-          const pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
-          const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
-          const motionController = xrInput.motionController
-          let humanCoord = null;
+      const pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
+      const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
+      const motionController = xrInput.motionController
+      let startCoord = null;
+      let endCoord = null;
 
-          if (motionController) {
-            // Switcha över vad pointern gjorde
-            switch (pointerInfo.type) {
-              case BABYLON.PointerEventTypes.POINTERDOWN:
-                humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
-                console.log("Piece picked up closest to ", humanCoord)
+      if (motionController) {
 
-                this.currentlySelectedPiece = board.getPiece(humanCoord)
-                this.currentlySelectedPiece.mesh.setParent(motionController.rootMesh)
+        switch (pointerInfo.type) {
+          case BABYLON.PointerEventTypes.POINTERDOWN:
+            startCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+            console.log("Piece picked up closest to ", startCoord, pointerInfo.pickInfo.pickedMesh.position)
+            this.currentlySelectedPiece = board.getPiece(startCoord)
+            this.currentlySelectedPiece.mesh.setParent(motionController.rootMesh)
+            break
 
-                break
+          case BABYLON.PointerEventTypes.POINTERUP:
+            if (!this.currentlySelectedPiece) return;
+            this.currentlySelectedPiece.removeParents();
+            endCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+            console.log("Piece let go closest to ", endCoord, pointerInfo.pickInfo.pickedMesh.position)
 
-              case BABYLON.PointerEventTypes.POINTERUP:
-                if (this.currentlySelectedPiece) this.currentlySelectedPiece.removeParents();
-                humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
-                console.log("Piece let go closest to ", humanCoord)
+            console.log(`Attempting to make move: ${startCoord}${endCoord}`)
+            api.makeMove(new Move(`${this.currentlySelectedPiece.getPosition()}${endCoord}`))
 
-                break
-            }
+            //update stream
 
-          } else {
-            // Om clicken inte kom från en VR kontrollen (t.ex. musen)
-          }
-
+            break
         }
+
+      } else {
+        // Om clicken inte kom från en VR kontrollen (t.ex. musen)
       }
     })
 
+    // Set up feature manager
     const featuresManager = xrHelper.baseExperience.featuresManager // or any other way to get a features manager
     featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable', {
       xrInput: xrHelper.input,

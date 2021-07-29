@@ -19,6 +19,10 @@ export default class Piece {
         this.createPiece();
     }
 
+    public getPosition() {
+        return this.position;
+    }
+
     public deleteMesh(): void {
         this.mesh.dispose();
     }
