@@ -5,103 +5,118 @@ import { boardSize } from './const';
 import GameStream from './apiHandler/gameStream';
 import Api from './apiHandler/api';
 import Move from './gamestate/move';
+import Piece from './piece'
 
 export default class MyScene {
-    private _canvas: HTMLCanvasElement;
-    private _engine: BABYLON.Engine;
-    private _scene: BABYLON.Scene;
-    private _camera: BABYLON.ArcRotateCamera;
-    private _light: BABYLON.Light;
-    private _ground: BABYLON.Mesh;
-    private xrCamera: BABYLON.WebXRCamera;
+  private _canvas: HTMLCanvasElement;
+  private _engine: BABYLON.Engine;
+  private _scene: BABYLON.Scene;
+  private _camera: BABYLON.ArcRotateCamera;
+  private _light: BABYLON.Light;
+  private _ground: BABYLON.Mesh;
+  private xrCamera: BABYLON.WebXRCamera;
 
-    constructor (canvasElement: string) {
-        // Create canvas and engine.
-        this._canvas = document.getElementById(canvasElement) as HTMLCanvasElement;
-        this._engine = new BABYLON.Engine(this._canvas, true);
+  private currentlySelectedPiece: Piece;
 
-        // Listen for browser/canvas resize events
-        window.addEventListener('resize', () => {
-            this._engine.resize();
-        });
-    }
+  constructor(canvasElement: string) {
+    // Create canvas and engine.
+    this._canvas = document.getElementById(canvasElement) as HTMLCanvasElement
+    this._engine = new BABYLON.Engine(this._canvas, true)
 
-    async createScene (): Promise<void> {
-        // Setup
-        this._scene = new BABYLON.Scene(this._engine);
-        this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene);
-        this._camera.setTarget(BABYLON.Vector3.Zero());
-        this._camera.attachControl(this._canvas, false);
-        this._light = new BABYLON.HemisphericLight('skyLight', new BABYLON.Vector3(0, 1, 0), this._scene);
-        const board = new Board(this._scene);
-        this.createGround();
+    // Listen for browser/canvas resize events
+    window.addEventListener('resize', () => {
+      this._engine.resize()
+    })
+  }
 
-        // Start stream
-        const gameStream = new GameStream();
-        gameStream.goUpdate(board);
+  async createScene(): Promise<void> {
+    // Setup
+    this._scene = new BABYLON.Scene(this._engine)
+    this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene)
+    this._camera.setTarget(BABYLON.Vector3.Zero())
+    this._camera.attachControl(this._canvas, false)
+    this._light = new BABYLON.PointLight("PointLight", new BABYLON.Vector3(0, 3, 0), this._scene);
 
-        // Set up VR
-        // Variabeln här som heter xr heter xrHelper i dokumentationen, men den som heter xrHelper här heter också xrHelper i andra delar av dokumentationen
-        // De är båda helpers och används till olika saker, men en är legacy och en inte, men jag vet inte vilken T_T
-        const xrHelper = await this._scene.createDefaultXRExperienceAsync({
-            floorMeshes: [this._ground]
-        });
+    //this._scene.debugLayer.show();
 
-        // Set up clicking on things
-        this._scene.onPointerObservable.add((pointerInfo) => {
-            console.log('POINTER DOWN', pointerInfo);
 
+    const board = new Board(this._scene)
+    this.createGround()
+
+    // Start stream
+    const stream = new GameStream()
+    stream.goUpdate(board)
+
+    // Set up VR
+    // Variabeln här som heter xr heter xrHelper i dokumentationen, men den som heter xrHelper här heter också xrHelper i andra delar av dokumentationen
+    // De är båda helpers och används till olika saker, men en är legacy och en inte, men jag vet inte vilken T_T
+    const xrHelper = await this._scene.createDefaultXRExperienceAsync({
+      floorMeshes: [this._ground]
+    })
+
+
+    //Om man kan se en pointer av valfritt slag (mus eller kontroll tex)
+    this._scene.onPointerObservable.add((pointerInfo) => {
+
+      // Om pointern träffade en mesh och man är inuti VR
+      if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
+        if (xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
+
+          const pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
+          const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
+          const motionController = xrInput.motionController
+          let humanCoord = null;
+
+          if (motionController) {
+            // Switcha över vad pointern gjorde
             switch (pointerInfo.type) {
-            case BABYLON.PointerEventTypes.POINTERDOWN:
-                if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh) {
-                    // "Grab" it by attaching the picked mesh to the VR Controller
-                    if (xrHelper.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-                        const pointerInfoEvent = pointerInfo.event as PointerEvent; // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
-                        const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId);
-                        const motionController = xrInput.motionController;
-                        if (motionController) {
-                            console.log('Position on board: ', getHumanCoord(pointerInfo.pickInfo.pickedMesh.position));
-                            const humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position);
-                            const selectedPiece = board.getPiece(humanCoord);
-                            selectedPiece.toggleSelect();
-                            // Spara någon stans att den är selectad
-                        }
-                    } else {
-                        // Här går non-XR support
-                    }
-                }
-                break;
+              case BABYLON.PointerEventTypes.POINTERDOWN:
+                humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+                console.log("Piece picked up closest to ", humanCoord)
 
-            case BABYLON.PointerEventTypes.POINTERUP:
-            // someone released a button
-                break;
+                this.currentlySelectedPiece = board.getPiece(humanCoord)
+                this.currentlySelectedPiece.mesh.setParent(motionController.rootMesh)
+
+                break
+
+              case BABYLON.PointerEventTypes.POINTERUP:
+                if (this.currentlySelectedPiece) this.currentlySelectedPiece.removeParents();
+                humanCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+                console.log("Piece let go closest to ", humanCoord)
+
+                break
             }
 
-        // Vad gör den här pointerdown råttan här? FattarNT
-        }, BABYLON.PointerEventTypes.POINTERDOWN);
+          } else {
+            // Om clicken inte kom från en VR kontrollen (t.ex. musen)
+          }
 
-        const featuresManager = xrHelper.baseExperience.featuresManager; // or any other way to get a features manager
-        featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable' /* or latest */, {
-            xrInput: xrHelper.input,
-            floorMeshes: [this._ground]
-        });
-    }
+        }
+      }
+    })
 
-    createGround (): void {
-        this._ground = BABYLON.Mesh.CreateGround('ground', boardSize, boardSize, 1, this._scene, false);
-        const groundMaterial = new BABYLON.StandardMaterial('ground', this._scene);
-        groundMaterial.diffuseTexture = new BABYLON.Texture('https://upload.wikimedia.org/wikipedia/commons/d/d5/Chess_Board.svg', this._scene);
-        groundMaterial.specularColor = BABYLON.Color3.Black();
-        this._ground.material = groundMaterial;
-    }
+    const featuresManager = xrHelper.baseExperience.featuresManager // or any other way to get a features manager
+    featuresManager.enableFeature(BABYLON.WebXRFeatureName.TELEPORTATION, 'stable', {
+      xrInput: xrHelper.input,
+      floorMeshes: [this._ground]
+    })
+  }
 
-    doRender (): void {
-        this._engine.runRenderLoop(() => {
-            this._scene.render();
-        });
+  createGround(): void {
+    this._ground = BABYLON.Mesh.CreateGround('ground', boardSize, boardSize, 1, this._scene, false)
+    const groundMaterial = new BABYLON.StandardMaterial('ground', this._scene)
+    groundMaterial.diffuseTexture = new BABYLON.Texture('https://upload.wikimedia.org/wikipedia/commons/d/d5/Chess_Board.svg', this._scene)
+    groundMaterial.specularColor = BABYLON.Color3.Black()
+    this._ground.material = groundMaterial
+  }
 
-        window.addEventListener('resize', () => {
-            this._engine.resize();
-        });
-    }
+  doRender(): void {
+    this._engine.runRenderLoop(() => {
+      this._scene.render()
+    })
+
+    window.addEventListener('resize', () => {
+      this._engine.resize()
+    })
+  }
 }

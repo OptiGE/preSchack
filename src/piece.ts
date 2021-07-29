@@ -8,59 +8,59 @@ export default class Piece {
     private scene: BABYLON.Scene;
     private position: Coordinate;
     private pieceValue: PieceValue;
-    private mesh: BABYLON.Mesh;
+    public mesh: BABYLON.Mesh;
     private selected: boolean;
     private material: BABYLON.StandardMaterial;
 
-    constructor (position: Coordinate, pieceValue: PieceValue, scene: BABYLON.Scene) {
+    constructor(position: Coordinate, pieceValue: PieceValue, scene: BABYLON.Scene) {
         this.scene = scene;
         this.position = position;
         this.pieceValue = pieceValue;
         this.createPiece();
     }
 
-    public deleteMesh (): void {
+    public deleteMesh(): void {
         this.mesh.dispose();
     }
 
-    private movePiece (): void {
+    private movePiece(): void {
         const absPos = getAbsCoord(this.position);
 
         this.mesh.position.x = absPos.x;
         this.mesh.position.z = absPos.z;
     }
 
-    private createPiece (): void {
+    private createPiece(): void {
         let height = boardSize / 20;
 
         switch (this.pieceValue.charAt(1)) {
-        case 'p':
-            height = boardSize / 20;
-            this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
-            break;
-        case 'r':
-            height = boardSize / 10;
-            this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 14, depth: boardSize / 14 }, this.scene);
-            break;
-        case 'b':
-            height = boardSize / 10;
-            this.mesh = BABYLON.MeshBuilder.CreatePolyhedron('gray', { type: 1, size: boardSize / 25 }, this.scene);
-            break;
-        case 'k':
-            height = boardSize / 30;
-            this.mesh = BABYLON.MeshBuilder.CreateTorus('gray', { diameter: boardSize / 15, thickness: boardSize / 30 }, this.scene);
-            break;
-        case 'K':
-            height = boardSize / 6;
-            this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
-            break;
-        case 'q':
-            height = boardSize / 5;
-            this.mesh = BABYLON.MeshBuilder.CreateCylinder('gray', { height: height, diameterBottom: boardSize / 10, diameterTop: boardSize / 35 }, this.scene);
-            break;
-        default:
-            console.error('Undefined piece type');
-            break;
+            case 'p':
+                height = boardSize / 20;
+                this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
+                break;
+            case 'r':
+                height = boardSize / 10;
+                this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 14, depth: boardSize / 14 }, this.scene);
+                break;
+            case 'b':
+                height = boardSize / 10;
+                this.mesh = BABYLON.MeshBuilder.CreatePolyhedron('gray', { type: 1, size: boardSize / 25 }, this.scene);
+                break;
+            case 'k':
+                height = boardSize / 30;
+                this.mesh = BABYLON.MeshBuilder.CreateTorus('gray', { diameter: boardSize / 15, thickness: boardSize / 30 }, this.scene);
+                break;
+            case 'K':
+                height = boardSize / 6;
+                this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
+                break;
+            case 'q':
+                height = boardSize / 5;
+                this.mesh = BABYLON.MeshBuilder.CreateCylinder('gray', { height: height, diameterBottom: boardSize / 10, diameterTop: boardSize / 35 }, this.scene);
+                break;
+            default:
+                console.error('Undefined piece type');
+                break;
         }
 
         this.material = new BABYLON.StandardMaterial('ground', this.scene);
@@ -74,7 +74,7 @@ export default class Piece {
         this.movePiece();
     }
 
-    public toggleSelect () : void {
+    public toggleSelect(): void {
         const selectedMaterial = new BABYLON.StandardMaterial('ground', this.scene);
         selectedMaterial.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
         selectedMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
@@ -87,5 +87,9 @@ export default class Piece {
             this.mesh.material = selectedMaterial;
             this.selected = true;
         }
+    }
+
+    removeParents() {
+        this.mesh.setParent(null);
     }
 }

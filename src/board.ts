@@ -9,14 +9,14 @@ export default class Board {
     private pieces: Map<Coordinate, Piece>;
     private boardStateHandler: BoardStateHandler;
 
-    constructor (scene: BABYLON.Scene) {
+    constructor(scene: BABYLON.Scene) {
         this.scene = scene;
         this.boardStateHandler = new BoardStateHandler();
 
         this.pieces = new Map<Coordinate, Piece>();
     }
 
-    public placePieces () : void {
+    public placePieces(): void {
         this.clearPieces();
         const board = this.boardStateHandler.getBoard();
 
@@ -25,11 +25,11 @@ export default class Board {
         }
     }
 
-    public getPiece (coordinate : Coordinate) : Piece {
+    public getPiece(coordinate: Coordinate): Piece {
         return this.pieces.get(coordinate);
     }
 
-    private clearPieces () : void {
+    private clearPieces(): void {
         this.pieces.forEach(piece => {
             piece.deleteMesh();
         });
@@ -38,12 +38,12 @@ export default class Board {
     }
 
     // TODO: Replace any with actual type
-    public updateBoard (update : any) : void {
+    public updateBoard(update: any): void {
         if (update.type === 'gameFull') {
             this.boardStateHandler.fullUpdate(update.state.moves);
             console.log(this.boardStateHandler.getBoard());
         } else if (update.type === 'gameState') {
-        // In the future, this should only run stepUpdate for the latest move
+            // In the future, this should only run stepUpdate for the latest move
             this.boardStateHandler.fullUpdate(update.moves);
             console.log(this.boardStateHandler.getBoard());
         } else {
