@@ -1,8 +1,10 @@
-import * as BABYLON from 'babylonjs'
-import Board from './board'
-import { getHumanCoord } from './coordinateConverter'
-import { boardSize } from './const'
-import CanStream from './canStream'
+import * as BABYLON from 'babylonjs';
+import Board from './board';
+import { getHumanCoord } from './coordinateConverter';
+import { boardSize } from './const';
+import GameStream from './apiHandler/gameStream';
+import Api from './apiHandler/api';
+import Move from './gamestate/move';
 import Piece from './piece'
 
 export default class MyScene {
@@ -42,8 +44,8 @@ export default class MyScene {
     this.createGround()
 
     // Start stream
-    const canStream = new CanStream()
-    canStream.goUpdate(board)
+    const stream = new GameStream()
+    stream.goUpdate(board)
 
     // Set up VR
     // Variabeln här som heter xr heter xrHelper i dokumentationen, men den som heter xrHelper här heter också xrHelper i andra delar av dokumentationen

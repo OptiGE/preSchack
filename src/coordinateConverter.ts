@@ -1,6 +1,6 @@
-import { Coordinate } from './gamestate/gamestateTypes'
-import { boardSize } from './const'
-import AbsPosition from './absPosition'
+import { Coordinate } from './gamestate/gamestateTypes';
+import { boardSize } from './const';
+import AbsPosition from './absPosition';
 
 const cornerxz = (boardSize / 2) - (boardSize / 16)
 const tileSize = boardSize / 8
@@ -10,9 +10,9 @@ export function getAbsCoord(coordinate: Coordinate): AbsPosition {
   const abspos: AbsPosition = {
     x: cornerxz - tileSize * (getNumFromLetter(coordinate.charAt(0)) - 1),
     z: cornerxz - tileSize * (parseInt(coordinate.charAt(1)) - 1)
-  }
+  };
 
-  return abspos
+  return abspos;
 }
 
 export function getHumanCoord(abspos: AbsPosition): Coordinate {
