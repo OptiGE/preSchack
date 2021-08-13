@@ -41,11 +41,9 @@ export default class Board {
     public updateBoard(update: any): void {
         if (update.type === 'gameFull') {
             this.boardStateHandler.fullUpdate(update.state.moves);
-            console.log(this.boardStateHandler.getBoard());
         } else if (update.type === 'gameState') {
             // In the future, this should only run stepUpdate for the latest move
             this.boardStateHandler.fullUpdate(update.moves);
-            console.log(this.boardStateHandler.getBoard());
         } else {
             console.log('Confused by type');
         }

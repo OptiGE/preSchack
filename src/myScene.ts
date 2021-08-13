@@ -52,6 +52,8 @@ export default class MyScene {
     })
 
     //Pointerhantering (mus eller kontroll tex)
+    let startCoord = null; //Start and end coordinates for a picked up and dropped off piece
+    let endCoord = null;
     this._scene.onPointerObservable.add((pointerInfo) => {
 
       // Om pointern träffade en mesh och man är inuti VR
@@ -61,16 +63,15 @@ export default class MyScene {
       const pointerInfoEvent = pointerInfo.event as PointerEvent // Det här är ett redigt fulhack för att TS är rädd att eventet också kan vara ett WheelEvent. Då kraschar detta.
       const xrInput = xrHelper.pointerSelection.getXRControllerByPointerId(pointerInfoEvent.pointerId)
       const motionController = xrInput.motionController
-      let startCoord = null;
-      let endCoord = null;
 
       if (motionController) {
 
         switch (pointerInfo.type) {
           case BABYLON.PointerEventTypes.POINTERDOWN:
             startCoord = getHumanCoord(pointerInfo.pickInfo.pickedMesh.position)
+            endCoord = null;
             console.log("Piece picked up closest to ", startCoord, pointerInfo.pickInfo.pickedMesh.position)
-            this.currentlySelectedPiece = board.getPiece(startCoord)
+            this.currentlySelectedPiece = board.getPiece(startCoord) // Den här omvägen behövs egentligen inte. Pieces behöver inte ha någon information i sig, mer än att de är meshes. 
             this.currentlySelectedPiece.mesh.setParent(motionController.rootMesh)
             break
 
@@ -81,9 +82,15 @@ export default class MyScene {
             console.log("Piece let go closest to ", endCoord, pointerInfo.pickInfo.pickedMesh.position)
 
             console.log(`Attempting to make move: ${startCoord}${endCoord}`)
-            api.makeMove(new Move(`${this.currentlySelectedPiece.getPosition()}${endCoord}`))
+            api.makeMove(new Move(`${startCoord}${endCoord}`))
 
-            //update stream
+            //Reset for next move
+            startCoord = null;
+            endCoord = null;
+            this.currentlySelectedPiece = null;
+
+            //Update stream
+            stream.goUpdate(board)
 
             break
         }
