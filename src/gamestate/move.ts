@@ -1,11 +1,11 @@
 import { Coordinate, PromotionPiece } from './gamestateTypes';
 
 export default class Move {
-    public From : Coordinate;
-    public To : Coordinate;
+    public From: Coordinate;
+    public To: Coordinate;
     public PromotedTo: PromotionPiece;
 
-    constructor (move : string) {
+    constructor(move: string) {
         this.From = move.slice(0, 2) as Coordinate;
         this.To = move.slice(2, 4) as Coordinate;
         if (move.length === 5) {
@@ -15,7 +15,15 @@ export default class Move {
         }
     }
 
-    public getMoveString () : string {
+    public getCol(coord: Coordinate) {
+        return coord.split("")[0]
+    }
+
+    public getRow(coord: Coordinate) {
+        return coord.split("")[1]
+    }
+
+    public getMoveString(): string {
         return `${this.From}${this.To}`;
     }
 }
