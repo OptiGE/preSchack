@@ -13,6 +13,7 @@ export default class BoardStateHandler {
       .map(moveString => new Move(moveString));
 
     moves.forEach((move: Move) => {
+      console.log(this.board);
       this.executeMove(move);
     });
   }
@@ -36,6 +37,9 @@ export default class BoardStateHandler {
     } else if (this.isCastle(move)) {
       this.movePiece(move);
       this.movePiece(this.castleRookMove(move));
+    } else if (this.isEnPassant(move)) {
+      this.movePiece(move);
+      this.removeEnPassant(move);
     } else {
       this.movePiece(move);
     }
@@ -43,6 +47,13 @@ export default class BoardStateHandler {
 
   private isPromotion(move: Move): boolean {
     return move.PromotedTo != null;
+  }
+
+  private isEnPassant(move: Move): boolean {
+    const pieceValue = this.board.get(move.From);
+
+    // A pawn && takes && an empty square
+    return (["wp", "bp"].includes(pieceValue) && move.From.split("")[0] != move.To.split("")[0] && this.board.get(move.To) == null)
   }
 
   private isCastle(move: Move): boolean {
@@ -68,6 +79,11 @@ export default class BoardStateHandler {
     }
 
     return null;
+  }
+
+  private removeEnPassant(move: Move): void {
+    const deathsquare = `${move.getCol(move.To)}${move.getRow(move.From)}` as Coordinate
+    this.board.set(deathsquare, null);
   }
 
   private promotedPieceValue(move: Move): PieceValue {

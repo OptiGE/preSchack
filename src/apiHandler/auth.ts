@@ -8,6 +8,6 @@ export default class Auth {
         // Gustaphs
         this.personalToken = 'wTjP95DubOM4kMPv';
         // lurre vs gustaph
-        this.gameId = 'heF7BTYx';
+        this.gameId = 'NkOFIfPWhvNW';
     }
 }
