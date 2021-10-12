@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs';
+import 'babylonjs-loaders';
 
 import { Coordinate, PieceValue } from './gamestate/gamestateTypes';
 import { getAbsCoord } from './coordinateConverter';
@@ -39,8 +40,20 @@ export default class Piece {
 
         switch (this.pieceValue.charAt(1)) {
             case 'p':
-                height = boardSize / 20;
-                this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
+                //this.mesh = BABYLON.MeshBuilder.CreateBox('gray', { height: height, width: boardSize / 20, depth: boardSize / 20 }, this.scene);
+
+                // The first parameter can be used to specify which mesh to import. Here we import all meshes
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_pawn/', 'scene.glb', this.scene, function (container) {
+                    console.log("Container");
+                    console.log(container);
+                });
+
+                //Try to use babylonjs.loaders.js instead of babylon.glTF1FileLoader.js as your file is probably not a gltf1 file.
+                // https://forum.babylonjs.com/t/unable-to-import-mesh/20298/12
+
+                // import 'babylonjs-loaders';
+
+
                 break;
             case 'r':
                 height = boardSize / 10;
