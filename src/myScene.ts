@@ -128,8 +128,9 @@ export default class MyScene {
       //Add the crazy scene
       const assetsManager = new BABYLON.AssetsManager(this._scene);
       assetsManager.load();
-        BABYLON.SceneLoader.ImportMesh('', './src/old_temple_interior/', 'scene.gltf', this._scene, function (meshes) {
+        BABYLON.SceneLoader.ImportMesh('', './src/old_temple_interior/', 'scene.glb', this._scene, function (meshes) {
             let mesh = meshes[0] as BABYLON.Mesh;
+            //meshes.forEach(mesh => mesh.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05))
         });
   }
 
