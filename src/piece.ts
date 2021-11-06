@@ -39,42 +39,42 @@ export default class Piece {
         console.log(`Current: ${this.pieceValue.charAt(1)}`);
         switch (this.pieceValue.charAt(1)) {
             case 'p':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_pawn/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_pawn/', 'pawn.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
                 });
                 break;
             case 'r':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_rook/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_rook/', 'rook.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
                 });
                 break;
             case 'b':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_bishop/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_bishop/', 'bishop.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
                 });
                 break;
             case 'k':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_knight/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_knight/', 'knight.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
                 });
                 break;
             case 'K':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_king/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_king/', 'king.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
                 });
                 break;
             case 'q':
-                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_queen/', 'scene.glb', this.scene, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh('', './src/models/low_poly_queen/', 'queen.obj', this.scene, function (meshes) {
                     self.mesh = meshes[0] as Mesh;
                     self.addMaterial();
                     self.movePiece();
@@ -95,13 +95,14 @@ export default class Piece {
     }
 
     private addMaterial(): void {
-        this.mesh.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
+        let scaleFactor = 0.02 * boardSize;
+        this.mesh.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
         this.material = new BABYLON.StandardMaterial('paint', this.scene);
         this.material.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
         this.material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
         if (this.pieceValue.charAt(0) === 'w') this.material.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         else if (this.pieceValue.charAt(0) === 'b') this.material.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.02);
-        this.mesh.getChildMeshes()[0].material = this.material;
+        this.mesh.material = this.material;
     }
 
     public toggleSelect(): void {

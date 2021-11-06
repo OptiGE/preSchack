@@ -14,7 +14,7 @@ export default class MyScene {
   private _camera: BABYLON.ArcRotateCamera;
   private _light: BABYLON.Light;
   private _ground: BABYLON.Mesh;
-  private xrCamera: BABYLON.WebXRCamera;
+  //private xrCamera: BABYLON.WebXRCamera;
 
   private currentlySelectedPiece: Piece;
 
