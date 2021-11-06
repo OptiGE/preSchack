@@ -4,10 +4,10 @@ export default class Auth {
 
     constructor() {
         // lurres
-        // this.personalToken = '6fcoVOkmvEZHPMBQ';
+        this.personalToken = 'lip_NBLXck1qVOIbbX13eMBW';
         // Gustaphs
-        this.personalToken = 'wTjP95DubOM4kMPv';
+        // this.personalToken = 'wTjP95DubOM4kMPv';
         // lurre vs gustaph
-        this.gameId = 'uHETNPlM';
+        this.gameId = '8kx78OI0';
     }
 }
