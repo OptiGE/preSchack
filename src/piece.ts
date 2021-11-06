@@ -1,4 +1,6 @@
 import * as BABYLON from 'babylonjs';
+import 'babylonjs-loaders';
+
 
 import { Coordinate, PieceValue } from './gamestate/gamestateTypes';
 import { getAbsCoord } from './coordinateConverter';

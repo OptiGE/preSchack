@@ -31,7 +31,8 @@ export default class MyScene {
 
   async createScene(): Promise<void> {
       // Set up BABYLON
-      this._scene = new BABYLON.Scene(this._engine); //this._scene.debugLayer.show();
+      this._scene = new BABYLON.Scene(this._engine);
+      this._scene.debugLayer.show();
       this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene);
       this._camera.setTarget(BABYLON.Vector3.Zero());
       this._camera.attachControl(this._canvas, false);
