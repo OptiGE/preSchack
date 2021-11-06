@@ -15,12 +15,12 @@ export default class Move {
         }
     }
 
-    public getCol(coord: Coordinate) {
-        return coord.split("")[0]
+    public getCol(coord: Coordinate) : string {
+        return coord.split('')[0];
     }
 
-    public getRow(coord: Coordinate) {
-        return coord.split("")[1]
+    public getRow(coord: Coordinate) : string {
+        return coord.split('')[1];
     }
 
     public getMoveString(): string {

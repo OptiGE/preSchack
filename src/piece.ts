@@ -5,10 +5,10 @@ import { getAbsCoord } from './coordinateConverter';
 import { boardSize } from './const';
 
 export default class Piece {
-    private scene: BABYLON.Scene;
-    private position: Coordinate;
-    private pieceValue: PieceValue;
+    public position: Coordinate;
+    public pieceValue: PieceValue;
     public mesh: BABYLON.Mesh;
+    private scene: BABYLON.Scene;
     private selected: boolean;
     private material: BABYLON.StandardMaterial;
 
@@ -17,10 +17,6 @@ export default class Piece {
         this.position = position;
         this.pieceValue = pieceValue;
         this.createPiece();
-    }
-
-    public getPosition() {
-        return this.position;
     }
 
     public deleteMesh(): void {
