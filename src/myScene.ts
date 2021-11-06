@@ -37,7 +37,7 @@ export default class MyScene {
       this._camera.attachControl(this._canvas, false);
       this._light = new BABYLON.PointLight('PointLight', new BABYLON.Vector3(0, 3, 0), this._scene);
 
-      // Set up
+      // Set up game
       const board = new Board(this._scene);
       const api = new Api();
       this.createGround();
@@ -123,6 +123,13 @@ export default class MyScene {
       groundMaterial.diffuseTexture = new BABYLON.Texture('https://upload.wikimedia.org/wikipedia/commons/d/d5/Chess_Board.svg', this._scene);
       groundMaterial.specularColor = BABYLON.Color3.Black();
       this._ground.material = groundMaterial;
+
+      //Add the crazy scene
+      const assetsManager = new BABYLON.AssetsManager(this._scene);
+      assetsManager.load();
+        BABYLON.SceneLoader.ImportMesh('', './src/old_temple_interior/', 'scene.gltf', this._scene, function (meshes) {
+            let mesh = meshes[0] as BABYLON.Mesh;
+        });
   }
 
   doRender(): void {
