@@ -29,6 +29,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@bity/oauth2-auth-code-pkce": "^2.13.0",
     "can-ndjson-stream": "^1.0.2",
     "ngrok": "^4.0.1"
   }

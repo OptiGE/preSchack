@@ -6,6 +6,7 @@ import GameStream from './apiHandler/gameStream';
 import Api from './apiHandler/api';
 import Move from './gamestate/move';
 import Piece from './piece';
+import AuthService from './apiHandler/authService';
 
 export default class MyScene {
   private _canvas: HTMLCanvasElement;
@@ -30,20 +31,24 @@ export default class MyScene {
   }
 
   async createScene(): Promise<void> {
+      // Login
+      const auth = new AuthService();
+      auth.login();
+
       // Set up BABYLON
       this._scene = new BABYLON.Scene(this._engine); //this._scene.debugLayer.show();
       this._camera = new BABYLON.ArcRotateCamera('Camera', Math.PI, 1.1, 30, new BABYLON.Vector3(0, 0, 0), this._scene);
       this._camera.setTarget(BABYLON.Vector3.Zero());
       this._camera.attachControl(this._canvas, false);
       this._light = new BABYLON.PointLight('PointLight', new BABYLON.Vector3(0, 3, 0), this._scene);
-
+      
       // Set up
       const board = new Board(this._scene);
-      const api = new Api();
+      const api = new Api(auth);
       this.createGround();
 
       // Start stream
-      const stream = new GameStream();
+      const stream = new GameStream(auth);
       stream.goUpdate(board);
 
       // Set up VR

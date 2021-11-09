@@ -1,17 +1,17 @@
 import ndjsonStream from 'can-ndjson-stream';
 import Board from '../board';
-import Auth from './auth';
+import AuthService from './authService';
 import fetchWrapper from './fetchWrapper';
 
 export default class GameStream {
-    private auth: Auth;
+    private auth: AuthService;
 
-    constructor() {
-        this.auth = new Auth();
+    constructor(auth : AuthService) {
+        this.auth = auth;
     }
 
     public goUpdate(board: Board): void {
-        fetchWrapper('GET', '/board/game/stream/' + this.auth.gameId)
+        fetchWrapper(this.auth, 'GET', '/board/game/stream/' + this.auth.gameId)
             .then((response) => {
                 console.log('GameStream response', response);
                 return ndjsonStream(response.body); // ndjsonStream parses the response.body

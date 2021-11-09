@@ -1,15 +1,14 @@
-import Auth from './auth';
+import AuthService from './authService';
 
 // For some reason ESlint can't resolve BodyInit and RequestInit
 // I'm adding eslint-disable comments in this file
 
 // eslint-disable-next-line no-undef
-export default function fetchWrapper (method : string, endpoint : string, requestBody? : BodyInit) : Promise<Response> {
+export default function fetchWrapper (auth : AuthService, method : string, endpoint : string, requestBody? : BodyInit) : Promise<Response> {
     const request = new Request(`https://lichess.org/api${endpoint}`);
     const headers = new Headers();
 
-    const auth = new Auth();
-    headers.append('Authorization', `Bearer ${auth.personalToken}`);
+    headers.append('Authorization', `Bearer ${auth.getAccessToken()}`);
 
     // eslint-disable-next-line no-undef
     const requestInit : RequestInit = {
